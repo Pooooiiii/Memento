@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memento — Reconstruct to Remember for Consistent Long Video Generation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800&family=Cormorant+Upright:ital,wght@1,700&display=swap" rel="stylesheet">
+    <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Nunito Sans', -apple-system, sans-serif;
+  background: #000000;
+  color: #F3EBD2;
+  line-height: 1.6;
+  font-size: 17px;
+}
+
+/* Hero */
+.hero {
+  text-align: center;
+  padding: 100px 20px 60px;
+  background: linear-gradient(180deg, #000000 0%, #000000 100%);
+  position: relative;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #4B3F1D, transparent);
+}
+
+.hero h1 {
+  font-family: "Cooper Black", "Cooper Std Black", Georgia, serif;
+  font-size: clamp(32px, 4vw, 56px);
+  font-weight: normal;
+  color: #FFFFFF;
+  letter-spacing: -0.02em;
+  margin-bottom: 24px;
+  line-height: 1.2;
+}
+
+.hero h1 .title-main {
+  font-weight: 900;
+  font-size: 1em;
+}
+
+.hero h1 .title-sub {
+  font-weight: normal;
+  font-size: 0.7em;
+}
+
+.authors span { color: #F3EBD2; font-size: 1.4em; font-weight: 700; }
+.affiliations { color: #A89E84; font-size: 1.2em; margin-bottom: 36px; }
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 22px;
+  background: transparent;
+  border: 1px solid #4B3F1D;
+  border-radius: 4px;
+  color: #A89E84;
+  text-decoration: none;
+  font-size: 0.8em;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+
+.action-btn:hover { border-color: #C8A94E; color: #F1D77A; box-shadow: 0 0 12px rgba(200,169,78,0.1); }
+
+/* Sections */
+.page-section {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 70px 20px;
+  position: relative;
+}
+
+.page-section.wide {
+  max-width: 1260px;
+}
+
+.page-section + .page-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 15%;
+  right: 15%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #4B3F1D, transparent);
+}
+
+.section-heading {
+  text-align: center;
+  font-family: "Cooper Black", "Cooper Std Black", Georgia, serif;
+  font-size: 2.4em;
+  font-weight: 900;
+  color: #F3EBD2;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 48px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  width: 900px;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Showcase Notes */
+.showcase-notes {
+  margin-bottom: 40px;
+  padding: 18px 24px;
+  background: #322e28;
+  border-left: 3px solid #C8A94E;
+  border-radius: 3px;
+  font-size: 0.88em;
+  line-height: 1.8;
+  color: #A89E84;
+}
+
+.showcase-notes p { margin-bottom: 8px; }
+.showcase-notes p:last-child { margin-bottom: 0; }
+.showcase-notes strong { color: #F3EBD2; font-weight: 700; }
+.showcase-notes em { color: #C8A94E; font-style: normal; }
+
+.cut-true {
+  display: inline-block;
+  background: rgba(200,169,78,0.12);
+  color: #C8A94E;
+  padding: 1px 8px;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 0.92em;
+}
+
+.cut-false {
+  display: inline-block;
+  background: rgba(120,180,120,0.1);
+  color: #7ab87a;
+  padding: 1px 8px;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 0.92em;
+}
+
+/* Story Tabs */
+.story-tabs-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.story-tabs-arrow {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #4B3F1D;
+  background: transparent;
+  color: #A89E84;
+  font-size: 1.1em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.story-tabs-arrow:hover { border-color: #C8A94E; color: #F1D77A; }
+
+.story-tabs {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.story-tabs::-webkit-scrollbar { display: none; }
+
+.story-tab {
+  padding: 14px 28px;
+  font-size: 0.95em;
+  font-weight: 600;
+  color: #7C735F;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.story-tab:hover { color: #A89E84; }
+.story-tab.active { color: #F3EBD2; border-bottom-color: #C8A94E; font-weight: 700; }
+
+/* Story Card */
+.story-card {
+  margin-bottom: 50px;
+}
+
+.story-card .story-title {
+  text-align: center;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 1.6em;
+  font-weight: 700;
+  color: #F3EBD2;
+  margin-bottom: 10px;
+  letter-spacing: 0.3px;
+}
+
+.story-card .story-desc {
+  text-align: center;
+  font-size: 0.92em;
+  color: #7C735F;
+  max-width: 700px;
+  margin: 0 auto 32px;
+  line-height: 1.8;
+  font-style: italic;
+}
+
+/* Video - Cinematic letterbox */
+.video-container {
+  position: relative;
+  background: #000;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.6),
+    0 0 0 1px rgba(200,169,78,0.05);
+}
+
+.main-video {
+  width: 100%;
+  display: block;
+}
+
+/* Shot Timeline */
+.shot-timeline {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 24px 0 14px;
+  scrollbar-width: thin;
+  scrollbar-color: #4B3F1D transparent;
+}
+
+.shot-timeline::-webkit-scrollbar { height: 3px; }
+.shot-timeline::-webkit-scrollbar-thumb { background: #4B3F1D; border-radius: 2px; }
+
+.shot-thumb {
+  flex-shrink: 0;
+  width: 128px;
+  cursor: pointer;
+  border: 1px solid #2a2215;
+  border-radius: 3px;
+  overflow: hidden;
+  transition: all 0.15s;
+  background: #322e28;
+  opacity: 0.6;
+}
+
+.shot-thumb:hover { opacity: 0.85; border-color: #4B3F1D; }
+.shot-thumb.active { opacity: 1; border-color: #C8A94E; box-shadow: 0 0 14px rgba(200,169,78,0.18); }
+
+.shot-thumb video {
+  width: 100%;
+  height: 68px;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+.shot-thumb .thumb-label {
+  padding: 5px 7px;
+  font-size: 0.62em;
+  line-height: 1.3;
+}
+
+.shot-thumb .thumb-label .t-scene { color: #7C735F; font-weight: 600; }
+.shot-thumb .thumb-label .t-type { color: #4B3F1D; font-size: 0.9em; }
+.shot-thumb.active .thumb-label .t-scene { color: #C8A94E; }
+
+/* Progress */
+.timeline-progress {
+  height: 1px;
+  background: #2a2215;
+  margin-bottom: 6px;
+}
+
+.timeline-progress .bar {
+  height: 100%;
+  background: linear-gradient(90deg, #C8A94E, #F1D77A);
+  transition: width 0.3s;
+}
+
+.timeline-counter {
+  text-align: right;
+  font-size: 0.7em;
+  color: #7C735F;
+  margin-bottom: 18px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5px;
+}
+
+/* Prompt */
+.prompt-display {
+  border: 1px solid #2a2215;
+  border-radius: 4px;
+  background: #322e28;
+}
+
+.prompt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 18px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.prompt-header span {
+  font-size: 0.8em;
+  color: #A89E84;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.prompt-header .toggle-icon {
+  color: #7C735F;
+  font-size: 0.75em;
+}
+
+.prompt-body { padding: 0 18px 18px; }
+
+.prompt-body .prompt-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.prompt-meta .shot-tag {
+  font-weight: 700;
+  color: #C8A94E;
+  font-size: 0.82em;
+  letter-spacing: 0.3px;
+}
+
+.prompt-meta .scene-tag {
+  color: #7C735F;
+  font-size: 0.76em;
+  font-style: italic;
+}
+
+.prompt-meta .cut-badge {
+  font-size: 0.62em;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 3px;
+  margin-left: auto;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.cut-badge.cut { background: rgba(180,80,60,0.1); color: #c87060; border: 1px solid rgba(180,80,60,0.2); }
+.cut-badge.cont { background: rgba(80,140,90,0.1); color: #70a878; border: 1px solid rgba(80,140,90,0.15); }
+
+.prompt-body .prompt-text {
+  font-size: 0.92em;
+  color: #A89E84;
+  line-height: 1.9;
+  padding: 14px 16px;
+  background: #0a0908;
+  border-left: 2px solid #4B3F1D;
+  border-radius: 2px;
+}
+
+/* Abstract */
+.abstract-section {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.abstract-text {
+  font-size: 1em;
+  color: #A89E84;
+  line-height: 2;
+  text-align: justify;
+}
+
+.abstract-text strong {
+  color: #F3EBD2;
+  font-weight: 700;
+}
+
+/* Pipeline */
+.pipeline-section {
+  text-align: center;
+}
+
+.pipeline-img {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto 24px;
+  display: block;
+  border-radius: 6px;
+  background: #fff;
+  padding: 16px;
+}
+
+.pipeline-caption {
+  color: #A89E84;
+  font-size: 1em;
+  line-height: 2;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: justify;
+}
+
+/* Benchmark */
+.benchmark-caption {
+  text-align: center;
+  color: #A89E84;
+  font-size: 0.85em;
+  line-height: 1.7;
+  max-width: 800px;
+  margin: 0 auto 32px;
+}
+
+.benchmark-table-wrap {
+  overflow-x: auto;
+}
+
+.benchmark-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82em;
+  text-align: center;
+}
+
+.benchmark-table th,
+.benchmark-table td {
+  padding: 10px 14px;
+  border: 1px solid #4B3F1D;
+}
+
+.benchmark-table thead th {
+  background: #1a1610;
+  color: #F3EBD2;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.benchmark-table tbody td {
+  color: #F3EBD2;
+}
+
+.benchmark-table tbody td strong {
+  color: #F1D77A;
+  font-weight: 800;
+  font-size: 1.05em;
+}
+
+.benchmark-table tbody td u {
+  color: #C8A94E;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.benchmark-table tbody td:first-child {
+  text-align: left;
+  font-weight: 600;
+  color: #F3EBD2;
+}
+
+.benchmark-table .ours-row td {
+  background: #16120C;
+  font-weight: 600;
+}
+
+.benchmark-table .ours-row td:first-child {
+  color: #F1D77A;
+  font-weight: 800;
+}
+
+/* Comparison */
+.comparison-story {
+  margin-bottom: 50px;
+}
+
+.comparison-story-title {
+  text-align: center;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 1.4em;
+  font-weight: 700;
+  color: #F3EBD2;
+  margin-bottom: 6px;
+}
+
+.comparison-story-desc {
+  text-align: center;
+  font-size: 0.9em;
+  color: #7C735F;
+  font-style: italic;
+  margin-bottom: 28px;
+}
+
+.comparison-grid {
+  display: flex;
+  gap: 12px;
+}
+
+.comparison-card {
+  flex: 1;
+  min-width: 0;
+  background: #322e28;
+  border: 1px solid #2a2215;
+  border-radius: 4px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+@media (max-width: 900px) {
+  .comparison-grid { flex-direction: column; }
+}
+
+.comparison-card:hover { border-color: #4B3F1D; }
+
+.comparison-label {
+  padding: 10px 14px;
+  font-size: 0.9em;
+  font-weight: 700;
+  color: #A89E84;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #2a2215;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ours-tag {
+  font-size: 0.75em;
+  background: rgba(200,169,78,0.12);
+  color: #C8A94E;
+  padding: 1px 6px;
+  border-radius: 3px;
+  border: 1px solid rgba(200,169,78,0.25);
+  letter-spacing: 0.5px;
+  font-weight: 700;
+}
+
+.comparison-card video {
+  width: 100%;
+  display: block;
+}
+
+/* Gallery */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(460px, 1fr));
+  gap: 40px;
+}
+
+.gallery-card {
+  background: #322e28;
+  border: 1px solid #2a2215;
+  border-radius: 4px;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+.gallery-card:hover {
+  border-color: #4B3F1D;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+.gallery-card video { width: 100%; display: block; }
+.gallery-card .card-info { padding: 12px 14px; }
+
+.gallery-card .card-title {
+  font-family: 'Nunito Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1.1em;
+  color: #F3EBD2;
+  margin-bottom: 3px;
+}
+
+.gallery-card .card-desc { font-size: 0.82em; color: #7C735F; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero h1 { font-size: 2.8em; }
+  .shot-thumb { width: 110px; }
+  .gallery-grid { grid-template-columns: 1fr; }
+}
+</style>
+  </head>
+  <body>
+    <!-- Hero -->
+    <div class="hero">
+      <h1><span class="title-main" style="font-family:'Cormorant Upright',serif;color:#C8A94E;font-size:1.5em;font-weight:700;font-style:italic;">Memento</span><br><span class="title-sub">Reconstruct to Remember for Consistent Long Video Generation</span></h1>
+      <div class="authors">
+        <span>Ernie Team</span>
+      </div>
+      <div class="affiliations">Baidu</div>
+      <div class="action-buttons">
+        <a href="#" class="action-btn"><span>📄</span> Paper</a>
+        <a href="#" class="action-btn"><span>💻</span> GitHub</a>
+        <a href="#" class="action-btn"><span>🤗</span> Model</a>
+      </div>
+    </div>
+    <!-- Showcases -->
+    <div class="page-section">
+      <div class="section-heading">Showcases</div>
+      <div class="story-tabs-wrap">
+        <button class="story-tabs-arrow" onclick="scrollTabs(-1)">‹</button>
+        <div class="story-tabs" id="storyTabs">
+          <div class="story-tab active" onclick="switchStory('explorer', this)">The Lost City of Eternis</div>
+          <div class="story-tab" onclick="switchStory('robinson', this)">Story of Robinson Crusoe</div>
+          <div class="story-tab" onclick="switchStory('astronaut', this)">The Last Walk</div>
+        </div>
+        <button class="story-tabs-arrow" onclick="scrollTabs(1)">›</button>
+      </div>
+      <div class="story-card" id="story-robinson" style="display:none">
+        <div class="story-title">Story of Robinson Crusoe</div>
+        <div class="story-desc">A castaway's journey from shipwreck to survival, companionship, and rescue — consistent character identity across 12 shots, 4 scenes.</div>
+        <div class="video-container">
+          <video class="main-video" id="video-robinson" controls preload="metadata">
+            <source src="show_case/robinson/01_01.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="shot-timeline" id="timeline-robinson"></div>
+        <div class="timeline-progress">
+          <div class="bar" id="bar-robinson" style="width:8.3%"></div>
+        </div>
+        <div class="timeline-counter" id="counter-robinson">1 / 12</div>
+        <div class="prompt-display" id="prompt-robinson">
+          <div class="prompt-header" onclick="togglePrompt('robinson')">
+            <span>Video Prompt</span>
+            <span class="toggle-icon" id="toggle-robinson">▼</span>
+          </div>
+          <div class="prompt-body" id="promptbody-robinson"></div>
+        </div>
+      </div>
+      <div class="story-card" id="story-astronaut" style="display:none">
+        <div class="story-title">The Last Walk</div>
+        <div class="story-desc">A lone astronaut embarks on a tranquil yet emotional mission to the Moon — consistent character identity across 11 shots, 3 scenes.</div>
+        <div class="video-container">
+          <video class="main-video" id="video-astronaut" controls preload="metadata">
+            <source src="show_case/astronaut/01_01.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="shot-timeline" id="timeline-astronaut"></div>
+        <div class="timeline-progress">
+          <div class="bar" id="bar-astronaut" style="width:9%"></div>
+        </div>
+        <div class="timeline-counter" id="counter-astronaut">1 / 11</div>
+        <div class="prompt-display" id="prompt-astronaut">
+          <div class="prompt-header" onclick="togglePrompt('astronaut')">
+            <span>Video Prompt</span>
+            <span class="toggle-icon" id="toggle-astronaut">▼</span>
+          </div>
+          <div class="prompt-body" id="promptbody-astronaut"></div>
+        </div>
+      </div>
+      <div class="story-card" id="story-explorer">
+        <div class="story-title">The Lost City of Eternis</div>
+        <div class="story-desc">An intrepid explorer ventures into the jungle and uncovers a long-lost city of forgotten relics — consistent character identity across 12 shots, 3 scenes.</div>
+        <div class="video-container">
+          <video class="main-video" id="video-explorer" controls preload="metadata">
+            <source src="show_case/explorer/01_01.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="shot-timeline" id="timeline-explorer"></div>
+        <div class="timeline-progress">
+          <div class="bar" id="bar-explorer" style="width:8.3%"></div>
+        </div>
+        <div class="timeline-counter" id="counter-explorer">1 / 12</div>
+        <div class="prompt-display" id="prompt-explorer">
+          <div class="prompt-header" onclick="togglePrompt('explorer')">
+            <span>Video Prompt</span>
+            <span class="toggle-icon" id="toggle-explorer">▼</span>
+          </div>
+          <div class="prompt-body" id="promptbody-explorer"></div>
+        </div>
+      </div>
+      <div class="showcase-notes">
+        <p><strong>Prompt Format:</strong> Each shot is conditioned on a two-part prompt: a <em>global caption</em> describing the character's persistent appearance (e.g., identity, clothing), and a <em>shot caption</em> describing the specific action and scene of the current shot.</p>
+        <p><strong>Cut Field:</strong> <span class="cut-true">cut = true</span> indicates a scene transition (new background, camera reset); <span class="cut-false">cut = false</span> indicates temporal continuity within the same scene (smooth motion, same camera).</p>
+      </div>
+    </div>
+    <!-- Abstract -->
+    <div class="page-section">
+      <div class="abstract-section">
+        <div class="section-heading">Abstract</div>
+        <p class="abstract-text">Long-form video generation requires recurring subjects to remain consistent across various shots, viewpoints, motions, and scene transitions. Existing temporal decomposition methods improve scalability by generating videos shot by shot. However, they mainly focus on optimizing plausible next-shot continuations without verifying whether the historical memory preserves identity-critical subject evidence. Consequently, as generation proceeds, recurring subjects may be diluted, overwritten, or forgotten. In this paper, we propose <strong>Memento</strong>, a subject-reconstruction-guided framework that treats subject preservation as an explicit identity grounding problem, based on the premise that a memory bank faithfully preserving a subject should support reconstructing that subject from memory alone. Specifically, Memento jointly trains autoregressive next-shot generation with memory-based subject reconstruction, recovering target appearances using historical memory and global story captions. To disentangle long-range subject evidence from short-range cues, Memento introduces a dual-query memory mechanism, where one query retrieves identity-relevant memory and the other selects short-context keyframes for coherent continuation. Additionally, a subject-aware cinematic data pipeline provides precise reconstruction supervision via consistent, pronoun-free subject descriptions. Experiments demonstrate that Memento achieves state-of-the-art performance in long-term subject consistency, cross-shot coherence, and visual quality.</p>
+      </div>
+    </div>
+    <!-- Pipeline -->
+    <div class="page-section wide">
+      <div class="section-heading">Pipeline</div>
+      <div class="pipeline-section">
+        <img src="model_pipeline.png" alt="Memento Framework Overview" class="pipeline-img">
+        <p class="pipeline-caption">Overview of our framework. We employ split self-attention over overlapping local groups, allowing reconstruction–memory and memory–target interactions while avoiding full global attention. Split cross-attention injects both global story-level and local shot-level captions. Story and shot captions condition separate learnable queries via caption-to-query cross-attention. The fused query retrieves relevant candidates from the memory bank and the last shot, and updates global and local memory states for scalable long-form generation.</p>
+      </div>
+    </div>
+    <!-- Benchmark -->
+    <div class="page-section wide">
+      <div class="section-heading">Benchmark</div>
+      <p class="benchmark-caption">Quantitative comparison of video generation capabilities. We report aesthetic quality, semantic consistency at both story and shot levels, background consistency, and subject consistency across different granularities. The best results are highlighted in <strong>bold</strong>, and the second-best results are <u>underlined</u>.</p>
+      <div class="benchmark-table-wrap">
+        <table class="benchmark-table">
+          <thead>
+            <tr>
+              <th rowspan="2">Method</th>
+              <th colspan="2">Semantic Consistency</th>
+              <th rowspan="2">Background<br>Consistency</th>
+              <th colspan="3">Subject Consistency</th>
+              <th rowspan="2">Aesthetic</th>
+            </tr>
+            <tr>
+              <th>Global</th>
+              <th>Shot</th>
+              <th>Inter-shot</th>
+              <th>Intra-shot</th>
+              <th>Inter-scene</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>StoryDiffusion + Wan2.2-I2V</td>
+              <td>0.2671</td>
+              <td>0.2689</td>
+              <td>0.9767</td>
+              <td>0.5525</td>
+              <td><u>0.8448</u></td>
+              <td>0.6732</td>
+              <td><strong>0.5310</strong></td>
+            </tr>
+            <tr>
+              <td>StoryMem</td>
+              <td><u>0.2793</u></td>
+              <td>0.2681</td>
+              <td>0.9732</td>
+              <td><u>0.6606</u></td>
+              <td>0.8146</td>
+              <td><u>0.6692</u></td>
+              <td>0.4937</td>
+            </tr>
+            <tr>
+              <td>HoloCine</td>
+              <td>0.2720</td>
+              <td><u>0.2854</u></td>
+              <td><u>0.9770</u></td>
+              <td>0.5791</td>
+              <td>0.8128</td>
+              <td>0.6594</td>
+              <td>0.4568</td>
+            </tr>
+            <tr class="ours-row">
+              <td>Ours</td>
+              <td><strong>0.3063</strong></td>
+              <td><strong>0.2893</strong></td>
+              <td><strong>0.9805</strong></td>
+              <td><strong>0.7338</strong></td>
+              <td><strong>0.8578</strong></td>
+              <td><strong>0.7268</strong></td>
+              <td><u>0.4977</u></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Comparison -->
+    <div class="page-section wide">
+      <div class="section-heading">Comparison</div>
+      <div class="comparison-story">
+        <div class="comparison-story-title">Jane Eyre: A Quiet Strength</div>
+        <div class="comparison-story-desc">4 scenes, 11 shots</div>
+        <div class="comparison-grid">
+          <div class="comparison-card">
+            <div class="comparison-label">StoryMem</div>
+            <video controls muted preload="metadata">
+              <source src="show_case/comparison/storymem_jane.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="comparison-card">
+            <div class="comparison-label">HoloCine</div>
+            <video controls muted preload="metadata">
+              <source src="show_case/comparison/holocine_jane.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="comparison-card">
+            <div class="comparison-label">
+              Memento
+              <span class="ours-tag">Ours</span>
+            </div>
+            <video controls muted preload="metadata">
+              <source src="show_case/comparison/subrecon_jane.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+      </div>
+      <div class="comparison-story">
+        <div class="comparison-story-title">Simple PhD Life</div>
+        <div class="comparison-story-desc">1 scene, 9 shots</div>
+        <div class="comparison-grid">
+          <div class="comparison-card">
+            <div class="comparison-label">StoryMem</div>
+            <video controls muted preload="metadata">
+              <source src="show_case/comparison/storymem_phd.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="comparison-card">
+            <div class="comparison-label">HoloCine</div>
+            <video controls muted preload="metadata">
+              <source src="show_case/comparison/holocine_phd.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="comparison-card">
+            <div class="comparison-label">
+              Memento
+              <span class="ours-tag">Ours</span>
+            </div>
+            <video controls muted preload="metadata">
+              <source src="show_case/comparison/subrecon_phd.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+      </div>
+      <div class="comparison-story">
+        <div class="comparison-story-title">The Light of Van Gogh</div>
+        <div class="comparison-story-desc">3 scenes, 10 shots</div>
+        <div class="comparison-grid">
+          <div class="comparison-card">
+            <div class="comparison-label">StoryMem</div>
+            <video controls muted preload="metadata">
+              <source src="show_case/comparison/storymem_vangogh.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="comparison-card">
+            <div class="comparison-label">HoloCine</div>
+            <video controls muted preload="metadata">
+              <source src="show_case/comparison/holocine_vangogh.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="comparison-card">
+            <div class="comparison-label">
+              Memento
+              <span class="ours-tag">Ours</span>
+            </div>
+            <video controls muted preload="metadata">
+              <source src="show_case/comparison/subrecon_vangogh.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- More Stories -->
+    <div class="page-section">
+      <div class="section-heading">More Stories</div>
+      <div class="gallery-grid">
+        <div class="gallery-card">
+          <video controls muted preload="metadata">
+            <source src="show_case/titanic.mp4" type="video/mp4">
+          </video>
+          <div class="card-info">
+            <div class="card-title">Titanic</div>
+            <div class="card-desc">4 scenes, 9 shots</div>
+          </div>
+        </div>
+        <div class="gallery-card">
+          <video controls muted preload="metadata">
+            <source src="show_case/queen.mp4" type="video/mp4">
+          </video>
+          <div class="card-info">
+            <div class="card-title">Queen</div>
+            <div class="card-desc">1 scene, 7 shots</div>
+          </div>
+        </div>
+        <div class="gallery-card">
+          <video controls muted preload="metadata">
+            <source src="show_case/princess.mp4" type="video/mp4">
+          </video>
+          <div class="card-info">
+            <div class="card-title">The Brave Prince and the Wolf</div>
+            <div class="card-desc">3 scenes, 9 shots</div>
+          </div>
+        </div>
+        <div class="gallery-card">
+          <video controls muted preload="metadata">
+            <source src="show_case/cat.mp4" type="video/mp4">
+          </video>
+          <div class="card-info">
+            <div class="card-title">A Cat's Peaceful Day</div>
+            <div class="card-desc">3 scenes, 10 shots</div>
+          </div>
+        </div>
+        <div class="gallery-card">
+          <video controls muted preload="metadata">
+            <source src="show_case/dog.mp4" type="video/mp4">
+          </video>
+          <div class="card-info">
+            <div class="card-title">A Man and His Dog</div>
+            <div class="card-desc">3 scenes, 8 shots</div>
+          </div>
+        </div>
+        <div class="gallery-card">
+          <video controls muted preload="metadata">
+            <source src="show_case/harry.mp4" type="video/mp4">
+          </video>
+          <div class="card-info">
+            <div class="card-title">Harry Potter and the Midnight Spell</div>
+            <div class="card-desc">3 scenes, 8 shots</div>
+          </div>
+        </div>
+        <div class="gallery-card">
+          <video controls muted preload="metadata">
+            <source src="show_case/santa.mp4" type="video/mp4">
+          </video>
+          <div class="card-info">
+            <div class="card-title">The Real Santa Claus</div>
+            <div class="card-desc">4 scenes, 12 shots</div>
+          </div>
+        </div>
+        <div class="gallery-card">
+          <video controls muted preload="metadata">
+            <source src="show_case/elon.mp4" type="video/mp4">
+          </video>
+          <div class="card-info">
+            <div class="card-title">A Day in the Life of Elon Musk</div>
+            <div class="card-desc">3 scenes, 9 shots</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+const STORIES = {
+  robinson: {
+    base: "show_case/robinson",
+    shots: [
+      { id:"01_01", scene:1, shot:1, type:"Wide shot", prompt:"global caption: [Person A]: young man with short dark brown hair wearing torn beige sailor shirt, dark vest, patched trousers, and rough leather belt; shot caption: [Person A] clings to a mast on a wooden sailing ship as towering waves slam across the deck under a dark, stormy sky. [Person A] pulls ropes and braces against the rail while lightning flashes through heavy rain and rough sea spray.", cut:true, sceneName:"The Shipwreck" },
+      { id:"01_02", scene:1, shot:2, type:"Medium shot", prompt:"global caption: [Person A]: young man with short dark brown hair wearing torn beige sailor shirt, dark vest, patched trousers, and rough leather belt; shot caption: [Person A] loses his grip on the mast and falls from the tilting wooden sailing ship into the churning dark water. He kicks through the foam and reaches toward broken waves as thunderclouds loom above the rolling ocean.", cut:false, sceneName:"The Shipwreck" },
+      { id:"01_03", scene:1, shot:3, type:"Close-up", prompt:"global caption: [Person A]: young man with short dark brown hair wearing torn beige sailor shirt, dark vest, patched trousers, and rough leather belt; shot caption: [Person A] lies unconscious on wet sand at sunrise, his torn clothing soaked. The calm ocean glistens behind him as he slowly opens his eyes, lifts his head slightly, and scans the empty shoreline in silence.", cut:true, sceneName:"The Shipwreck" },
+      { id:"02_01", scene:2, shot:4, type:"Wide shot", prompt:"global caption: [Person A]: young man with short dark brown hair wearing torn beige sailor shirt, dark vest, patched trousers, and rough leather belt; shot caption: [Person A] steps carefully through the dense island jungle, carrying a wooden stick and a small bundle of salvaged supplies. He parts broad leaves with the stick, looking cautiously between shadowed tree trunks as sunlight filters through the canopy.", cut:true, sceneName:"Survival on the Island" },
+      { id:"02_02", scene:2, shot:5, type:"Medium shot", prompt:"global caption: [Person A]: young man with short dark brown hair wearing torn beige sailor shirt, dark vest, patched trousers, and rough leather belt; shot caption: [Person A] stacks branches near a rocky cliffside camp, with gathered fruit and salvaged tools arranged nearby. He wipes sweat from his forehead, tightens his grip on a branch, and fits it into a rough wooden hut frame.", cut:true, sceneName:"Survival on the Island" },
+      { id:"02_03", scene:2, shot:6, type:"Close-up", prompt:"global caption: [Person A]: young man with short dark brown hair wearing torn beige sailor shirt, dark vest, patched trousers, and rough leather belt; shot caption: [Person A] kneels beside a small campfire ring at dusk, striking flint stones above dry grass. He watches the first flames catch, his shoulders lowering as the orange firelight warms his calm, resolute face against the darkening camp.", cut:true, sceneName:"Survival on the Island" },
+      { id:"03_01", scene:3, shot:7, type:"Medium shot", prompt:"global caption: [Person A]: young man with short dark brown hair wearing torn beige sailor shirt, dark vest, patched trousers, and rough leather belt; shot caption: [Person A] carves a piece of wood beside a crude hut on a sunny beach, then pauses with his knife held still. He turns toward fresh footprints pressed into the sand and rises slowly with a tense jaw and narrowed eyes.", cut:true, sceneName:"Meeting Friday" },
+      { id:"03_02", scene:3, shot:8, type:"Two-shot", prompt:"global caption: [Person A]: young man with short dark brown hair wearing torn beige sailor shirt, dark vest, patched trousers, and rough leather belt, [Person B]: man with short curly black hair wearing simple woven tan clothing; shot caption: [Person A] crouches behind thick coastal bushes and spots [Person B] bound with ropes in a sandy clearing. [Person A] steps forward cautiously and loosens the ropes, while [Person B] bows his head and gives a small, relieved smile.", cut:true, sceneName:"Meeting Friday" },
+      { id:"03_03", scene:3, shot:9, type:"Medium shot", prompt:"global caption: [Person A]: young man with short dark brown hair wearing torn beige sailor shirt, dark vest, patched trousers, and rough leather belt, [Person B]: man with short curly black hair wearing simple woven tan clothing; shot caption: [Person A] and [Person B] repair a rough wooden fence and cook food beside a campfire at a golden sunset. [Person A] passes a branch to [Person B], who answers with an easy smile as warm light settles across their camp.", cut:true, sceneName:"Meeting Friday" },
+      { id:"04_01", scene:4, shot:10, type:"Wide shot", prompt:"global caption: [Person A]: young man with short dark brown hair wearing torn beige sailor shirt, dark vest, patched trousers, and rough leather belt, [Person B]: man with short curly black hair wearing simple woven tan clothing; shot caption: [Person A] and [Person B] stand atop a high cliff at dawn, looking toward a distant ship on the calm ocean horizon. [Person A] lifts his chin while [Person B] leans forward slightly, soft golden light outlining both their faces.", cut:true, sceneName:"Rescue & Hope" },
+      { id:"04_02", scene:4, shot:11, type:"Medium close-up", prompt:"global caption: [Person A]: young man with short dark brown hair wearing torn beige sailor shirt, dark vest, patched trousers, and rough leather belt, [Person B]: man with short curly black hair wearing simple woven tan clothing; shot caption: [Person A] and [Person B] wave both arms toward the approaching ship beyond the cliff edge. The wind lifts their loose hair and fabric as [Person A] smiles with wet eyes and [Person B] continues waving toward the sea.", cut:false, sceneName:"Rescue & Hope" },
+      { id:"04_03", scene:4, shot:12, type:"Wide shot", prompt:"global caption: [Person A]: young man with short dark brown hair wearing torn beige sailor shirt, dark vest, patched trousers, and rough leather belt, [Person B]: man with short curly black hair wearing simple woven tan clothing; shot caption: [Person A] and [Person B] appear as small figures on the cliff, with the island camp, crude hut, and shoreline spread below. The distant ship sails closer across the brightening water as sunrise expands over the ocean.", cut:true, sceneName:"Rescue & Hope" }
+    ]
+  },
+  astronaut: {
+    base: "show_case/astronaut",
+    shots: [
+      { id:"01_01", scene:1, shot:1, type:"Wide shot", prompt:"global caption: [Person A]: person with short dark hair wearing white spacesuit, bulky gloves, life-support backpack, and gold-tinted helmet visor; shot caption: [Person A] floats gently near a wide window inside a softly lit spacecraft cabin as loose tools drift slowly around them. Earth and the Moon glow beyond the glass while cool blue light washes over curved metallic panels.", cut:true, sceneName:"Inside the Spacecraft" },
+      { id:"01_02", scene:1, shot:2, type:"Medium shot", prompt:"global caption: [Person A]: person with short dark hair wearing white spacesuit, bulky gloves, life-support backpack, and gold-tinted helmet visor; shot caption: [Person A] steadies one hand on a softly glowing digital mission panel and turns the helmet visor toward the Moon beyond the cabin window. Blue interface light reflects across the gold-tinted visor as the body remains calm and controlled in zero gravity.", cut:false, sceneName:"Inside the Spacecraft" },
+      { id:"01_03", scene:1, shot:3, type:"Close-up", prompt:"global caption: [Person A]: person with short dark hair wearing white spacesuit, bulky gloves, life-support backpack, and gold-tinted helmet visor; shot caption: [Person A] holds both bulky gloves tightly and gives a small, steady nod inside the dim spacecraft cabin. Cabin lights flicker across the white spacesuit as faint vibrations pass through floating straps and nearby equipment.", cut:false, sceneName:"Inside the Spacecraft" },
+      { id:"02_01", scene:2, shot:4, type:"Wide shot", prompt:"global caption: [Person A]: person with short dark hair wearing white spacesuit, bulky gloves, life-support backpack, and gold-tinted helmet visor; shot caption: The lunar spacecraft rests on pale gray lunar dust as [Person A] carefully descends the lower steps of the ladder. Fine silver dust lifts around the landing pads under weak gravity while the empty lunar plain stretches toward a black sky.", cut:true, sceneName:"On the Moon" },
+      { id:"02_02", scene:2, shot:5, type:"Medium shot", prompt:"global caption: [Person A]: person with short dark hair wearing white spacesuit, bulky gloves, life-support backpack, and gold-tinted helmet visor; shot caption: [Person A] walks forward across the Moon with slow, deliberate steps, leaving crisp footprints in the powdery gray dust. A long shadow trails across the lunar plain as the helmet visor tilts upward toward a star-filled black sky.", cut:false, sceneName:"On the Moon" },
+      { id:"02_03", scene:2, shot:6, type:"Medium shot", prompt:"global caption: [Person A]: person with short dark hair wearing white spacesuit, bulky gloves, life-support backpack, and gold-tinted helmet visor; shot caption: [Person A] presses the mission flag pole carefully into the gray lunar surface beside a low rock formation, the fabric hanging still in the vacuum as the astronaut straightens and looks out across the silent horizon.", cut:true, sceneName:"On the Moon" },
+      { id:"02_04", scene:2, shot:7, type:"Close-up", prompt:"global caption: [Person A]: person with short dark hair wearing white spacesuit, bulky gloves, life-support backpack, and gold-tinted helmet visor; shot caption: [Person A] slows and crouches beside the lunar surface, reaching down to lift a small pale gray Moon rock from the dust with both gloved hands. Fine particles drift gently upward as the rock rises, with Earth reflected faintly in the gold-tinted visor.", cut:false, sceneName:"On the Moon" },
+      { id:"03_01", scene:3, shot:8, type:"Wide shot", prompt:"global caption: [Person A]: person with short dark hair wearing white spacesuit, bulky gloves, life-support backpack, and gold-tinted helmet visor; shot caption: [Person A] sits on a small lunar rock, facing Earth above the distant horizon as the Sun lowers behind a gray ridge. Orange dusk light stretches long shadows across the pale surface while the black sky remains still and vast.", cut:true, sceneName:"Farewell" },
+      { id:"03_02", scene:3, shot:9, type:"Close-up", prompt:"global caption: [Person A]: person with short dark hair wearing white spacesuit, bulky gloves, life-support backpack, and gold-tinted helmet visor; shot caption: [Person A] rests a gloved hand on a small blue holographic recorder beacon beside the lunar rock. The beacon's soft blue light pulses near the white spacesuit, while the helmet visor remains angled toward Earth.", cut:false, sceneName:"Farewell" },
+      { id:"03_03", scene:3, shot:10, type:"Medium shot", prompt:"global caption: [Person A]: person with short dark hair wearing white spacesuit, bulky gloves, life-support backpack, and gold-tinted helmet visor; shot caption: [Person A] stands near the small rock, pausing for one final look toward Earth before turning toward the lunar spacecraft in the distance. Curving footprints trail in the gray dust behind the astronaut while low light softens the empty plain.", cut:false, sceneName:"Farewell" },
+      { id:"03_04", scene:3, shot:11, type:"Interior", prompt:"global caption: [Person A]: person with short dark hair wearing white spacesuit, bulky gloves, life-support backpack, and gold-tinted helmet visor; shot caption: [Person A] sits inside the spacecraft cabin without a helmet, watching the Moon shrink beyond the window during ascent. Soft window light reveals short dark hair and a calm, tired face as the helmet rests beside the white spacesuit.", cut:true, sceneName:"Farewell" }
+    ]
+  },
+  explorer: {
+    base: "show_case/explorer",
+    shots: [
+      { id:"01_01", scene:1, shot:1, type:"Wide shot", prompt:"global caption: [Person A]: man with short dark stubble wearing khaki field shirt, khaki trousers, wide-brimmed brown hat, leather backpack, and sturdy brown boots; shot caption: [Person A] hikes through a misty jungle at dawn, carrying a folded map in one hand with thick vines hanging from towering trees. He steps carefully over wet roots while golden light breaks through the humid canopy air.", cut:true, sceneName:"Into the Jungle" },
+      { id:"01_02", scene:1, shot:2, type:"Medium close-up", prompt:"global caption: [Person A]: man with short dark stubble wearing khaki field shirt, khaki trousers, wide-brimmed brown hat, leather backpack, and sturdy brown boots; shot caption: [Person A] kneels beside an overgrown stone marker partly buried in moss, brushing away damp soil with steady fingers. He leans closer with a curious expression as faint carved glyph patterns emerge from beneath the moss.", cut:false, sceneName:"Into the Jungle" },
+      { id:"01_03", scene:1, shot:3, type:"Medium shot", prompt:"global caption: [Person A]: man with short dark stubble wearing khaki field shirt, khaki trousers, wide-brimmed brown hat, leather backpack, and sturdy brown boots; shot caption: [Person A] looks up from the mossy marker toward a faint stone pathway leading deeper into the jungle. He steps cautiously onto the old path, parting hanging branches with one hand as he moves forward.", cut:false, sceneName:"Into the Jungle" },
+      { id:"01_04", scene:1, shot:4, type:"Wide shot", prompt:"global caption: [Person A]: man with short dark stubble wearing khaki field shirt, khaki trousers, wide-brimmed brown hat, leather backpack, and sturdy brown boots; shot caption: [Person A] stops in awe at the edge of a misty valley as distant ancient stone towers appear through the fog. He stands still with a lifted face and lowered map while cool mist drifts across the valley floor.", cut:true, sceneName:"Into the Jungle" },
+      { id:"02_01", scene:2, shot:5, type:"Medium shot", prompt:"global caption: [Person A]: man with short dark stubble wearing khaki field shirt, khaki trousers, wide-brimmed brown hat, leather backpack, and sturdy brown boots; shot caption: [Person A] approaches massive vine-covered stone gates at the entrance of the lost city, tracing carved glyph patterns with his fingers. He moves slowly under leaf-filtered sunlight as hanging vines sway around the gate.", cut:true, sceneName:"Entering Eternis" },
+      { id:"02_02", scene:2, shot:6, type:"Medium shot", prompt:"global caption: [Person A]: man with short dark stubble wearing khaki field shirt, khaki trousers, wide-brimmed brown hat, leather backpack, and sturdy brown boots; shot caption: [Person A] presses both hands against a heavy stone door, pushing until a narrow gap opens into a dark corridor. He steps forward as sunlight spills across floating dust particles and rough stone edges.", cut:false, sceneName:"Entering Eternis" },
+      { id:"02_03", scene:2, shot:7, type:"Wide shot", prompt:"global caption: [Person A]: man with short dark stubble wearing khaki field shirt, khaki trousers, wide-brimmed brown hat, leather backpack, and sturdy brown boots; shot caption: [Person A] walks slowly through the dim corridor, raising a burning torch beside walls covered in glowing murals and carved marks. He moves at a measured pace as flickering light reveals damp stone textures and old roots.", cut:false, sceneName:"Entering Eternis" },
+      { id:"02_04", scene:2, shot:8, type:"Wide shot", prompt:"global caption: [Person A]: man with short dark stubble wearing khaki field shirt, khaki trousers, wide-brimmed brown hat, leather backpack, and sturdy brown boots; shot caption: [Person A] enters a grand chamber filled with crumbling statues and a central stone altar. He turns slowly in silent wonder beneath towering stone figures, his eyes widening as torchlight glides across dusty pillars.", cut:true, sceneName:"Entering Eternis" },
+      { id:"03_01", scene:3, shot:9, type:"Close-up", prompt:"global caption: [Person A]: man with short dark stubble wearing khaki field shirt, khaki trousers, wide-brimmed brown hat, leather backpack, and sturdy brown boots; shot caption: [Person A] carefully lifts a small golden relic with engraved spiral patterns, worn edges, and warm reflective metal from the central altar. He steadies his trembling fingers, studying the artifact as torchlight ripples across its surface.", cut:true, sceneName:"The Eternal Light" },
+      { id:"03_02", scene:3, shot:10, type:"Medium shot", prompt:"global caption: [Person A]: man with short dark stubble wearing khaki field shirt, khaki trousers, wide-brimmed brown hat, leather backpack, and sturdy brown boots; shot caption: [Person A] examines the small golden relic with engraved spiral patterns, worn edges, and warm reflective metal as hidden stone mechanisms shift. He raises his face toward a ceiling opening where beams of sunlight pour down through drifting dust.", cut:false, sceneName:"The Eternal Light" },
+      { id:"03_03", scene:3, shot:11, type:"Medium shot", prompt:"global caption: [Person A]: man with short dark stubble wearing khaki field shirt, khaki trousers, wide-brimmed brown hat, leather backpack, and sturdy brown boots; shot caption: [Person A] stands bathed in golden shafts of sunlight, holding the small golden relic with engraved spiral patterns, worn edges, and warm reflective metal close to his chest. He gazes upward in awe as dust sparkles across the illuminated statues.", cut:false, sceneName:"The Eternal Light" },
+      { id:"03_04", scene:3, shot:12, type:"Wide shot", prompt:"global caption: [Person A]: man with short dark stubble wearing khaki field shirt, khaki trousers, wide-brimmed brown hat, leather backpack, and sturdy brown boots; shot caption: [Person A] remains motionless in the radiant chamber, holding the small golden relic with engraved spiral patterns, worn edges, and warm reflective metal at waist level. He keeps a reverent posture as golden light fills the room and dust drifts by.", cut:false, sceneName:"The Eternal Light" }
+    ]
+  }
+};
+
+let activeStory = 'explorer';
+let currentShot = 0;
+
+function switchStory(storyId, tabEl) {
+  activeStory = storyId;
+  currentShot = 0;
+
+  document.querySelectorAll('.story-tab').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.story-card').forEach(card => card.style.display = 'none');
+
+  tabEl.classList.add('active');
+  document.getElementById('story-' + storyId).style.display = 'block';
+
+  buildTimeline(storyId);
+  selectShot(0);
+}
+
+function scrollTabs(dir) {
+  const tabs = document.getElementById('storyTabs');
+  tabs.scrollBy({ left: dir * 200, behavior: 'smooth' });
+}
+
+function buildTimeline(storyId) {
+  const story = STORIES[storyId];
+  const el = document.getElementById('timeline-' + storyId);
+  el.innerHTML = story.shots.map((s, i) => `
+    <div class="shot-thumb ${i===0?'active':''}" data-idx="${i}" onclick="selectShot(${i})">
+      <video muted preload="metadata" src="${story.base}/${s.id}.mp4"></video>
+      <div class="thumb-label">
+        <div class="t-scene">Scene ${s.scene}, Shot ${s.shot}</div>
+        <div class="t-type">${s.type}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectShot(idx) {
+  const story = STORIES[activeStory];
+  currentShot = idx;
+  const s = story.shots[idx];
+
+  document.querySelectorAll('#timeline-' + activeStory + ' .shot-thumb').forEach((el, i) => {
+    el.classList.toggle('active', i === idx);
+  });
+
+  const activeThumb = document.querySelector('#timeline-' + activeStory + ' .shot-thumb.active');
+  if (activeThumb) activeThumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+
+  document.getElementById('bar-' + activeStory).style.width = `${((idx + 1) / story.shots.length) * 100}%`;
+  document.getElementById('counter-' + activeStory).textContent = `${idx + 1} / ${story.shots.length}`;
+
+  const video = document.getElementById('video-' + activeStory);
+  video.src = `${story.base}/${s.id}.mp4`;
+  video.load();
+  video.play().catch(() => {});
+
+  renderPrompt(s, activeStory);
+}
+
+function renderPrompt(s, storyId) {
+  const cutClass = s.cut ? 'cut' : 'cont';
+  const cutLabel = s.cut ? 'CUT' : 'CONT';
+  document.getElementById('promptbody-' + storyId).innerHTML = `
+    <div class="prompt-meta">
+      <span class="shot-tag">Scene ${s.scene}, Shot ${s.shot}</span>
+      <span class="scene-tag">${s.sceneName} · ${s.type}</span>
+      <span class="cut-badge ${cutClass}">${cutLabel}</span>
+    </div>
+    <div class="prompt-text">${s.prompt}</div>
+  `;
+}
+
+function togglePrompt(id) {
+  const body = document.getElementById('promptbody-' + id);
+  const icon = document.getElementById('toggle-' + id);
+  if (body.style.display === 'none') {
+    body.style.display = 'block';
+    icon.textContent = '▼';
+  } else {
+    body.style.display = 'none';
+    icon.textContent = '▶';
+  }
+}
+
+document.addEventListener('keydown', e => {
+  const story = STORIES[activeStory];
+  if (e.key === 'ArrowRight' && currentShot < story.shots.length - 1) { e.preventDefault(); selectShot(currentShot + 1); }
+  if (e.key === 'ArrowLeft' && currentShot > 0) { e.preventDefault(); selectShot(currentShot - 1); }
+});
+
+buildTimeline('explorer');
+renderPrompt(STORIES.explorer.shots[0], 'explorer');
+</script>
+    <section style="max-width:860px;margin:60px auto 40px;padding:0 20px;">
+      <h2 style="font-family:'Cooper Black','Cooper Std Black',Georgia,serif;font-size:1.4rem;font-weight:700;margin-bottom:16px;">Cite This Work</h2>
+      <pre style="background:#1a1a1a;border:1px solid #333;border-radius:6px;padding:20px;font-size:0.85rem;line-height:1.6;overflow-x:auto;white-space:pre;color:#F3EBD2;">@misc{wei2026memento,
+  title        = {Memento: Reconstruct to Remember for Consistent Long Video Generation},
+  author       = {Xuan Wei and Xiangrui Liu and Longbin Ji and Guan Wang and Zhenyu Zhang and Shuohuan Wang and Yu Sun and Qingqi Hong},
+  year         = {2026},
+  note         = {Preprint}
+}</pre>
+    </section>
+  </body>
+</html>
